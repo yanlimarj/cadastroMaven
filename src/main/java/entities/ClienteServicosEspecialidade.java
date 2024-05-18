@@ -1,5 +1,6 @@
 package entities;
 
+import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ClienteServicosEspecialidade extends Cliente {
     }
 
     public void cadastrarCliente() {
-        String sql = "INSERT INTO Cliente (nomeCompleto, dataNascimento, endereco, telefone, dataInicio, dataEncerramento, status, especialidade, nomeMedico) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO pessoa_assistida_especialidades (nomeCompleto, dataNascimento, endereco, telefone, dataInicio, dataEncerramento, status, especialidade, nomeMedico) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = connect();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, getNomeCompleto());
@@ -64,12 +65,116 @@ public class ClienteServicosEspecialidade extends Cliente {
         }
     }
 
-    public void alterarCliente() {
-        super.alterarCliente();
+    public void alterarCliente(int selectedRow, DefaultTableModel tableModel) {
+        String nomeCompleto = (String) tableModel.getValueAt(selectedRow, 0);
+        String dataNascimento = (String) tableModel.getValueAt(selectedRow, 1);
+        String endereco = (String) tableModel.getValueAt(selectedRow, 2);
+        String telefone = (String) tableModel.getValueAt(selectedRow, 3);
+        String dataInicio = (String) tableModel.getValueAt(selectedRow, 4);
+        String especialidade = (String) tableModel.getValueAt(selectedRow, 5);
+        String nomeMedico = (String) tableModel.getValueAt(selectedRow, 6);
+
+        String sql = "UPDATE pessoa_assistida_especialidades SET nomeCompleto = ?, dataNascimento = ?, endereco = ?, telefone = ?, dataInicio = ?, especialidade = ?, nomeMedico = ? WHERE nomeCompleto = ?";
+
+        try (Connection connection = connect();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeCompleto);
+            pstmt.setString(2, dataNascimento);
+            pstmt.setString(3, endereco);
+            pstmt.setString(4, telefone);
+            pstmt.setString(5, dataInicio);
+            pstmt.setString(6, especialidade);
+            pstmt.setString(7, nomeMedico);
+            pstmt.setString(8, nomeCompleto);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Cliente atualizado com sucesso!");
+            } else {
+                System.out.println("Nenhum cliente encontrado com o nome fornecido.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
     }
 
-    public void excluirCliente() {
-        super.excluirCliente();
+    public void excluirCliente(int selectedRow, DefaultTableModel tableModel) {
+        String nomeCompleto = (String) tableModel.getValueAt(selectedRow, 0);
+
+        String sql = "DELETE FROM pessoa_assistida_especialidades WHERE nomeCompleto = ?";
+
+        try (Connection connection = connect();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeCompleto);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Cliente excluído com sucesso!");
+                tableModel.removeRow(selectedRow);
+            } else {
+                System.out.println("Nenhum cliente encontrado com o nome fornecido.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+    }
+    public static List<ClienteServicosEspecialidade> buscarTodos() {
+        List<ClienteServicosEspecialidade> clientes = new ArrayList<>();
+        String sql = "SELECT * FROM pessoa_assistida_especialidades";
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
+             PreparedStatement pstmt = connection.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                ClienteServicosEspecialidade cliente = new ClienteServicosEspecialidade();
+                cliente.setNomeCompleto(rs.getString("nomeCompleto"));
+                cliente.setDataNascimento(rs.getString("dataNascimento"));
+                cliente.setEndereco(rs.getString("endereco"));
+                cliente.setTelefone(rs.getString("telefone"));
+                cliente.setDataInicio(rs.getString("dataInicio"));
+                cliente.setDataEncerramento(rs.getString("dataEncerramento"));
+                cliente.setEspecialidade(rs.getString("especialidade"));
+                cliente.setNomeMedico(rs.getString("nomeMedico"));
+                clientes.add(cliente);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return clientes;
+    }
+
+    public static List<ClienteServicosEspecialidade> buscarPorMedico(String nomeMedico) {
+        List<ClienteServicosEspecialidade> pacientes = new ArrayList<>();
+        String sql = "SELECT * FROM pessoa_assistida_especialidades WHERE nomeMedico = ?";
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeMedico);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ClienteServicosEspecialidade paciente = new ClienteServicosEspecialidade(
+                        rs.getString("nomeCompleto"),
+                        rs.getString("dataNascimento"),
+                        rs.getString("endereco"),
+                        rs.getString("telefone"),
+                        rs.getString("dataInicio"),
+                        rs.getString("especialidade"),
+                        rs.getString("nomeMedico")
+                );
+                pacientes.add(paciente);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pacientes;
     }
 
     public static List<Cliente> buscarClientesPorNome(String nome) {

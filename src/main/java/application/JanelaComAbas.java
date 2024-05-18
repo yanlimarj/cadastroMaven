@@ -44,7 +44,6 @@ public class JanelaComAbas extends JFrame {
     private JComboBox<String> comboBoxMedicoBusca;
     private JComboBox<String> comboBoxEspecialidadeListaMedicos;
     private ArrayList<ClienteServicosEspecialidade> pacientes = new ArrayList<>();
-    private ClienteCestaBasica clientes = new ClienteCestaBasica();
     private DefaultTableModel tableModel;
     private DefaultTableModel tableModelCesta;
     private JTable table;
@@ -70,6 +69,9 @@ public class JanelaComAbas extends JFrame {
                 else if(abas.getSelectedIndex() == 4){
                     atualizarTabelaMedicos();
                 }
+                else if(abas.getSelectedIndex() == 2){
+                    atualizarTabela();
+                }
             }
         });
 
@@ -81,8 +83,8 @@ public class JanelaComAbas extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         configurarPanelCadastro();
         configurarPanelCadastroMedico();
@@ -174,6 +176,8 @@ public class JanelaComAbas extends JFrame {
     }
 
     private void configurarPanelBusca(GridBagConstraints gbc) {
+        ClienteServicosEspecialidade paciente = new ClienteServicosEspecialidade();
+
         panelBusca.setLayout(new GridBagLayout());
         panelBusca.add(new JLabel("Especialidade:"), gbc);
 
@@ -201,6 +205,9 @@ public class JanelaComAbas extends JFrame {
 
 
         gbc.gridy++;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
         tableModel = new DefaultTableModel();
         table = new JTable(tableModel);
         tableModel.addColumn("Nome");
@@ -211,7 +218,6 @@ public class JanelaComAbas extends JFrame {
         tableModel.addColumn("Especialidade");
         tableModel.addColumn("Médico");
 
-        atualizarTabela(pacientes);
 
         TableColumn column = null;
         for (int i = 0; i < 7; i++) {
@@ -228,12 +234,53 @@ public class JanelaComAbas extends JFrame {
         scrollPane.setPreferredSize(new Dimension(800, 600));
         panelBusca.add(scrollPane, gbc);
 
-        gbc.gridy = 4;
-        gbc.gridx = 1;
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
         JButton btnBuscar = new JButton("Buscar");
         panelBusca.add(btnBuscar, gbc);
 
-        btnBuscar.addActionListener(new BuscarActionListener(listas, comboBoxEspecialidadeBusca, comboBoxMedicoBusca, table));
+        btnBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                atualizarTabela();
+            }
+        });
+
+        gbc.gridy++;
+        JButton btnAlterarMedico = new JButton("Alterar");
+        panelBusca.add(btnAlterarMedico, gbc);
+
+        btnAlterarMedico.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1){
+                    paciente.alterarCliente(selectedRow, tableModel);
+                }
+                else{
+                    JOptionPane.showMessageDialog(panelBusca, "Selecione uma linha para alterar.");
+                }
+            }
+        });
+        gbc.gridy++;
+        JButton btnExcluir = new JButton("Excluir");
+        panelBusca.add(btnExcluir, gbc);
+
+        btnExcluir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1){
+                    paciente.excluirCliente(selectedRow, tableModel);
+                }
+                else{
+                    JOptionPane.showMessageDialog(panelBusca, "Selecione uma linha para excluir.");
+                }
+            }
+        });
     }
 
     private void configurarPanelCadastroMedico() {
@@ -637,7 +684,16 @@ public class JanelaComAbas extends JFrame {
         }
     }
 
-    private void atualizarTabela(ArrayList<ClienteServicosEspecialidade> pacientes) {
+    private void atualizarTabela() {
+        String nomeMedico = (String) comboBoxMedicoBusca.getSelectedItem();
+        List<ClienteServicosEspecialidade> pacientes;
+        if("Selecione".equals(nomeMedico)){
+            pacientes = ClienteServicosEspecialidade.buscarTodos();
+        }
+        else{
+            pacientes = ClienteServicosEspecialidade.buscarPorMedico(nomeMedico);
+        }
+
         tableModel.setRowCount(0);
 
         for (ClienteServicosEspecialidade paciente : pacientes) {
@@ -746,6 +802,7 @@ public class JanelaComAbas extends JFrame {
             }
         }
     }
+
     private void preencherMedicosBusca() {
         String especialidadeSelecionada = (String) comboBoxEspecialidadeBusca.getSelectedItem();
         comboBoxMedicoBusca.removeAllItems();
