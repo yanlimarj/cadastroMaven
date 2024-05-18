@@ -173,7 +173,6 @@ public class JanelaComAbas extends JFrame {
         });
     }
 
-
     private void configurarPanelBusca(GridBagConstraints gbc) {
         panelBusca.setLayout(new GridBagLayout());
         panelBusca.add(new JLabel("Especialidade:"), gbc);
@@ -240,58 +239,63 @@ public class JanelaComAbas extends JFrame {
     private void configurarPanelCadastroMedico() {
         panelCadastroMedico.setLayout(new GridBagLayout());
         GridBagConstraints gbcMedico = new GridBagConstraints();
+        gbcMedico.fill = GridBagConstraints.HORIZONTAL;
+        gbcMedico.insets = new Insets(5, 5, 5, 5);
+
+
         gbcMedico.gridx = 0;
-        gbcMedico.gridy = 0;
-        gbcMedico.anchor = GridBagConstraints.CENTER;
-        gbcMedico.weightx = 1.0;
-
-
         gbcMedico.gridy = 0;
         panelCadastroMedico.add(new JLabel("Nome:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         textFieldNomeMedico = new JTextField(20);
         panelCadastroMedico.add(textFieldNomeMedico, gbcMedico);
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
         panelCadastroMedico.add(new JLabel("Telefone:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         textFieldTelefoneMedico = new JTextField(20);
         panelCadastroMedico.add(textFieldTelefoneMedico, gbcMedico);
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
         panelCadastroMedico.add(new JLabel("Matrícula:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         textFieldMatricula = new JTextField(20);
         panelCadastroMedico.add(textFieldMatricula, gbcMedico);
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
         panelCadastroMedico.add(new JLabel("Endereço:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         textFieldEnderecoMedico = new JTextField(20);
         panelCadastroMedico.add(textFieldEnderecoMedico, gbcMedico);
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
         panelCadastroMedico.add(new JLabel("Email:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         textFieldEmailMedico = new JTextField(20);
         panelCadastroMedico.add(textFieldEmailMedico, gbcMedico);
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
         panelCadastroMedico.add(new JLabel("Função:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         textFieldFuncaoMedico = new JTextField(20);
         panelCadastroMedico.add(textFieldFuncaoMedico, gbcMedico);
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
         panelCadastroMedico.add(new JLabel("Especialidade:"), gbcMedico);
 
-        gbcMedico.gridy++;
+        gbcMedico.gridx = 1;
         comboBoxEspecialidadeMedico = new JComboBox<>();
         for (String servico : listas.getListaEspecialidades()) {
             comboBoxEspecialidadeMedico.addItem(servico);
@@ -299,7 +303,10 @@ public class JanelaComAbas extends JFrame {
         panelCadastroMedico.add(comboBoxEspecialidadeMedico, gbcMedico);
 
 
+        gbcMedico.gridx = 0;
         gbcMedico.gridy++;
+        gbcMedico.gridwidth = 2;
+        gbcMedico.anchor = GridBagConstraints.CENTER;
         JButton btnCadastrarMedico = new JButton("Cadastrar Médico");
         panelCadastroMedico.add(btnCadastrarMedico, gbcMedico);
 
@@ -331,83 +338,87 @@ public class JanelaComAbas extends JFrame {
     private void configurarPanelCadastro() {
         panelCadastro.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 1.0;
-
-
         panelCadastro.add(new JLabel("Nome:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         textFieldNome = new JTextField(20);
         panelCadastro.add(textFieldNome, gbc);
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Data de Nascimento:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         textFieldDataNascimento = new JTextField(20);
         panelCadastro.add(textFieldDataNascimento, gbc);
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Endereço:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         textFieldEndereco = new JTextField(20);
         panelCadastro.add(textFieldEndereco, gbc);
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Telefone:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         textFieldTelefone = new JTextField(20);
         panelCadastro.add(textFieldTelefone, gbc);
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Data de Início:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         textFieldDataInicio = new JTextField(20);
         panelCadastro.add(textFieldDataInicio, gbc);
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Data de Encerramento:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         textFieldDataEncerramento = new JTextField(20);
         panelCadastro.add(textFieldDataEncerramento, gbc);
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Serviço:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         comboBoxServico = new JComboBox<>();
-        panelCadastro.add(comboBoxServico, gbc);
         comboBoxServico.addItem("Cesta Básica");
         comboBoxServico.addItem("Tratamento");
+        panelCadastro.add(comboBoxServico, gbc);
 
         comboBoxServico.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String servicoSelecionado = (String) comboBoxServico.getSelectedItem();
-                if (servicoSelecionado.equals("Tratamento")) {
-                    comboBoxEspecialidade.setEnabled(true);
-                    comboBoxMedico.setEnabled(true);
-                } else {
-                    comboBoxEspecialidade.setEnabled(false);
-                    comboBoxMedico.setEnabled(false);
-                }
+                boolean isTratamento = servicoSelecionado.equals("Tratamento");
+                comboBoxEspecialidade.setEnabled(isTratamento);
+                comboBoxMedico.setEnabled(isTratamento);
+
             }
         });
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Especialidade:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         comboBoxEspecialidade = new JComboBox<>();
-        for (String servico : listas.getListaEspecialidades()) {
-            comboBoxEspecialidade.addItem(servico);
+        for (String especialidade : listas.getListaEspecialidades()) {
+            comboBoxEspecialidade.addItem(especialidade);
         }
         panelCadastro.add(comboBoxEspecialidade, gbc);
 
@@ -419,10 +430,11 @@ public class JanelaComAbas extends JFrame {
         });
 
 
+        gbc.gridx = 0;
         gbc.gridy++;
         panelCadastro.add(new JLabel("Médico:"), gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         comboBoxMedico = new JComboBox<>();
         comboBoxMedico.addItem("Selecione");
         panelCadastro.add(comboBoxMedico, gbc);
@@ -431,7 +443,10 @@ public class JanelaComAbas extends JFrame {
         comboBoxMedico.setEnabled(false);
 
 
+        gbc.gridx = 0;
         gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         JButton btnCadastrar = new JButton("Cadastrar");
         panelCadastro.add(btnCadastrar, gbc);
 
@@ -526,7 +541,6 @@ public class JanelaComAbas extends JFrame {
         pack();
         setLocationRelativeTo(null);
     }
-
 
     private void alterarMedico() {
         int linhaSelecionada = tableMedicos.getSelectedRow();
@@ -720,7 +734,7 @@ public class JanelaComAbas extends JFrame {
         textFieldFuncaoMedico.setText("");
         comboBoxEspecialidadeMedico.setSelectedIndex(0);
     }
-    
+
     private void preencherMedicos() {
         String especialidadeSelecionada = (String) comboBoxEspecialidade.getSelectedItem();
         comboBoxMedico.removeAllItems();
