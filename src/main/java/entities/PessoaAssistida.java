@@ -1,11 +1,10 @@
 package entities;
 
-import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cliente {
+public class PessoaAssistida {
 
     private String nomeCompleto;
     private String dataNascimento;
@@ -18,18 +17,18 @@ public class Cliente {
     public static final String STATUS_ATIVO = "Ativo";
     public static final String STATUS_ENCERRADO = "Encerrado";
 
-    public Cliente(){
+    public PessoaAssistida(){
         this.status = STATUS_ATIVO;
     }
 
-    public Cliente(String nomeCompleto, String dataNascimento, String endereco, String telefone){
+    public PessoaAssistida(String nomeCompleto, String dataNascimento, String endereco, String telefone){
         this.nomeCompleto = nomeCompleto;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
         this.telefone = telefone;
     }
 
-    public Cliente(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio, String dataEncerramento) {
+    public PessoaAssistida(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio, String dataEncerramento) {
         this.nomeCompleto = nomeCompleto;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
@@ -39,7 +38,7 @@ public class Cliente {
         this.status = STATUS_ATIVO;
     }
 
-    public Cliente(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio) {
+    public PessoaAssistida(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio) {
         this.nomeCompleto = nomeCompleto;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
@@ -144,9 +143,9 @@ public class Cliente {
     public void excluirCliente() {
     }
 
-    public static List<Cliente> buscarClientesPorNome(String nome) {
-        String sql = "SELECT * FROM pessoa_assistida WHERE nomeCompleto LIKE ?";
-        List<Cliente> clientes = new ArrayList<>();
+    public static List<PessoaAssistida> buscarClientesPorNome(String nome, String tabela) {
+        List<PessoaAssistida> pessoaAssistidas = new ArrayList<>();
+        String sql = "SELECT * FROM " + tabela + " WHERE nomeCompleto LIKE ?";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -155,22 +154,36 @@ public class Cliente {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                Cliente cliente = new Cliente() {};
-                cliente.setNomeCompleto(rs.getString("nomeCompleto"));
-                cliente.setDataNascimento(rs.getString("dataNascimento"));
-                cliente.setEndereco(rs.getString("endereco"));
-                cliente.setTelefone(rs.getString("telefone"));
-                cliente.setDataInicio(rs.getString("dataInicio"));
-                cliente.setDataEncerramento(rs.getString("dataEncerramento"));
-                cliente.setStatus(rs.getString("status"));
+                PessoaAssistida cliente = null;
+                if (tabela.equals("pessoa_assistida_cesta_basica")) {
+                    cliente = new PessoaAssistidaCestaBasica();
+                } else if (tabela.equals("pessoa_assistida_especialidades")) {
+                    cliente = new PessoaServicosEspecialidade();
+                }
 
-                clientes.add(cliente);
+                if (cliente != null) {
+                    cliente.setNomeCompleto(rs.getString("nomeCompleto"));
+                    cliente.setDataNascimento(rs.getString("dataNascimento"));
+                    cliente.setEndereco(rs.getString("endereco"));
+                    cliente.setTelefone(rs.getString("telefone"));
+                    cliente.setDataInicio(rs.getString("dataInicio"));
+                    cliente.setDataEncerramento(rs.getString("dataEncerramento"));
+                    cliente.setStatus(rs.getString("status"));
+
+                    if (cliente instanceof PessoaServicosEspecialidade) {
+                        ((PessoaServicosEspecialidade) cliente).setEspecialidade(rs.getString("especialidade"));
+                        ((PessoaServicosEspecialidade) cliente).setNomeMedico(rs.getString("nomeMedico"));
+                        ((PessoaServicosEspecialidade) cliente).setObsProfissional(rs.getString("obsProfissional"));
+                    }
+
+                    pessoaAssistidas.add(cliente);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return clientes;
+        return pessoaAssistidas;
     }
 
 }

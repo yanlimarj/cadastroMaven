@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static entities.PessoaServicosEspecialidade.buscarClientesPorNome;
+
 public class JanelaComAbas extends JFrame {
 
     JTabbedPane abas = new JTabbedPane();
@@ -43,7 +45,7 @@ public class JanelaComAbas extends JFrame {
     private JComboBox<String> comboBoxEspecialidadeBusca;
     private JComboBox<String> comboBoxMedicoBusca;
     private JComboBox<String> comboBoxEspecialidadeListaMedicos;
-    private ArrayList<ClienteServicosEspecialidade> pacientes = new ArrayList<>();
+    private ArrayList<PessoaServicosEspecialidade> pacientes = new ArrayList<>();
     private DefaultTableModel tableModel;
     private DefaultTableModel tableModelCesta;
     private JTable table;
@@ -91,7 +93,7 @@ public class JanelaComAbas extends JFrame {
         configurarPanelBusca(gbc);
 
 
-        configurarPanelCesta(gbc);
+        configurarPanelCesta();
 
         configurarPanelMedicos();
 
@@ -106,12 +108,29 @@ public class JanelaComAbas extends JFrame {
 
     }
 
-    private void configurarPanelCesta(GridBagConstraints gbc) {
+    private void configurarPanelCesta() {
 
-        ClienteCestaBasica cliente = new ClienteCestaBasica();
+        PessoaAssistidaCestaBasica cliente = new PessoaAssistidaCestaBasica();
         panelCesta.setLayout(new GridBagLayout());
         GridBagConstraints gbcCesta = new GridBagConstraints();
 
+        gbcCesta.gridx = 0;
+        gbcCesta.gridy = 0;
+        gbcCesta.anchor = GridBagConstraints.WEST;
+        panelCesta.add(new JLabel("Nome do Paciente:"), gbcCesta);
+
+        gbcCesta.gridx = 1;
+        gbcCesta.fill = GridBagConstraints.HORIZONTAL;
+        gbcCesta.weightx = 1.0;
+        JTextField txtNomePacienteCesta = new JTextField(20);
+        panelCesta.add(txtNomePacienteCesta, gbcCesta);
+
+        gbcCesta.gridx = 0;
+        gbcCesta.gridy = 1;
+        gbcCesta.gridwidth = 2;
+        gbcCesta.fill = GridBagConstraints.BOTH;
+        gbcCesta.weightx = 1.0;
+        gbcCesta.weighty = 1.0;
 
         tableModelCesta = new DefaultTableModel();
         tableModelCesta.addColumn("Nome");
@@ -124,22 +143,32 @@ public class JanelaComAbas extends JFrame {
         tableCesta = new JTable(tableModelCesta);
         JScrollPane scrollPaneCesta = new JScrollPane(tableCesta);
         scrollPaneCesta.setPreferredSize(new Dimension(800, 600));
-
-
-        gbcCesta.gridx = 0;
-        gbcCesta.gridy = 0;
-        gbcCesta.gridwidth = GridBagConstraints.REMAINDER;
-        gbcCesta.fill = GridBagConstraints.BOTH;
-        gbcCesta.weightx = 1.0;
-        gbcCesta.weighty = 1.0;
         panelCesta.add(scrollPaneCesta, gbcCesta);
-
 
         gbcCesta.gridy++;
         gbcCesta.fill = GridBagConstraints.NONE;
         gbcCesta.weightx = 0;
         gbcCesta.weighty = 0;
         gbcCesta.anchor = GridBagConstraints.CENTER;
+        JButton btnBuscar = new JButton("Buscar");
+        panelCesta.add(btnBuscar, gbcCesta);
+
+        btnBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nome = txtNomePacienteCesta.getText();
+                if (!nome.isEmpty()) {
+                    List<PessoaAssistida> pacientes = PessoaAssistidaCestaBasica.buscarClientesPorNome(nome);
+                    atualizarTabelaCesta(pacientes);
+                } else {
+                    atualizarTabelaCesta();
+                }
+            }
+        });
+
+
+        gbcCesta.gridx = 0;
+        gbcCesta.gridy = 3;
         JButton btnAlterar = new JButton("Alterar");
         panelCesta.add(btnAlterar, gbcCesta);
 
@@ -157,7 +186,8 @@ public class JanelaComAbas extends JFrame {
         });
 
 
-        gbcCesta.gridy++;
+        gbcCesta.gridx = 0;
+        gbcCesta.gridy = 4;
         JButton btnExcluir = new JButton("Excluir");
         panelCesta.add(btnExcluir, gbcCesta);
 
@@ -176,13 +206,32 @@ public class JanelaComAbas extends JFrame {
     }
 
     private void configurarPanelBusca(GridBagConstraints gbc) {
-        ClienteServicosEspecialidade paciente = new ClienteServicosEspecialidade();
+        PessoaServicosEspecialidade paciente = new PessoaServicosEspecialidade();
 
         panelBusca.setLayout(new GridBagLayout());
+
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        panelBusca.add(new JLabel("Nome do Paciente:"), gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        JTextField txtNomePaciente = new JTextField(20);
+        panelBusca.add(txtNomePaciente, gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
         panelBusca.add(new JLabel("Especialidade:"), gbc);
 
         gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
         comboBoxEspecialidadeBusca = new JComboBox<>();
+        comboBoxEspecialidadeBusca.addItem("Todas");
         for (String especialidade : listas.getListaEspecialidades()) {
             comboBoxEspecialidadeBusca.addItem(especialidade);
         }
@@ -192,6 +241,8 @@ public class JanelaComAbas extends JFrame {
         panelBusca.add(new JLabel("Médico:"), gbc);
 
         gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
         comboBoxMedicoBusca = new JComboBox<>();
         comboBoxMedicoBusca.addItem("Selecione");
         panelBusca.add(comboBoxMedicoBusca, gbc);
@@ -245,7 +296,14 @@ public class JanelaComAbas extends JFrame {
         btnBuscar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                atualizarTabela();
+                String nome = txtNomePaciente.getText();
+                if (!nome.isEmpty()){
+                    List<PessoaAssistida> pacientes = buscarClientesPorNome(nome);
+                    atualizarTabela(pacientes);
+                }
+                else {
+                    atualizarTabela();
+                }
             }
         });
 
@@ -664,39 +722,79 @@ public class JanelaComAbas extends JFrame {
         }
     }
 
-    private void atualizarTabelaCesta() {
-        if (tableModelCesta.getRowCount() > 0) {
-            tableModelCesta.setRowCount(0);
+    private void atualizarTabelaCesta(List<PessoaAssistida> pacientes) {
+        tableModelCesta.setRowCount(0);
+
+        for (PessoaAssistida pessoaAssistida : pacientes) {
+            tableModelCesta.addRow(new Object[]{
+                    pessoaAssistida.getNomeCompleto(),
+                    pessoaAssistida.getDataNascimento(),
+                    pessoaAssistida.getEndereco(),
+                    pessoaAssistida.getTelefone(),
+                    pessoaAssistida.getDataInicio(),
+                    pessoaAssistida.getDataEncerramento()
+            });
         }
+    }
 
-        List<ClienteCestaBasica> clientes = ClienteCestaBasica.buscarTodos();
+    private void atualizarTabelaCesta() {
 
-        for (ClienteCestaBasica cliente : clientes) {
-            Object[] row = {
+        List<PessoaAssistidaCestaBasica> clientes = PessoaAssistidaCestaBasica.buscarTodos();
+
+        tableModelCesta.setRowCount(0);
+
+        for (PessoaAssistidaCestaBasica cliente : clientes) {
+            tableModelCesta.addRow(new Object[]{
                     cliente.getNomeCompleto(),
                     cliente.getDataNascimento(),
                     cliente.getEndereco(),
                     cliente.getTelefone(),
                     cliente.getDataInicio(),
                     cliente.getDataEncerramento()
-            };
-            tableModelCesta.addRow(row);
+            });
+        }
+    }
+
+    private void atualizarTabela(List<PessoaAssistida> pacientes) {
+        tableModel.setRowCount(0);
+
+        for (PessoaAssistida pessoaAssistida : pacientes) {
+            String especialidade = "";
+            String nomeMedico = "";
+
+            if (pessoaAssistida instanceof PessoaServicosEspecialidade) {
+                PessoaServicosEspecialidade clienteEspecial = (PessoaServicosEspecialidade) pessoaAssistida;
+                especialidade = clienteEspecial.getEspecialidade();
+                nomeMedico = clienteEspecial.getNomeMedico();
+            }
+
+            tableModel.addRow(new Object[]{
+                    pessoaAssistida.getNomeCompleto(),
+                    pessoaAssistida.getDataNascimento(),
+                    pessoaAssistida.getEndereco(),
+                    pessoaAssistida.getTelefone(),
+                    pessoaAssistida.getDataInicio(),
+                    especialidade,
+                    nomeMedico
+            });
         }
     }
 
     private void atualizarTabela() {
         String nomeMedico = (String) comboBoxMedicoBusca.getSelectedItem();
-        List<ClienteServicosEspecialidade> pacientes;
-        if("Selecione".equals(nomeMedico)){
-            pacientes = ClienteServicosEspecialidade.buscarTodos();
+        String especialidade = (String) comboBoxEspecialidadeBusca.getSelectedItem();
+
+        List<PessoaServicosEspecialidade> pacientes;
+        if("Todas".equals(especialidade)){
+            pacientes = PessoaServicosEspecialidade.buscarTodos();
         }
         else{
-            pacientes = ClienteServicosEspecialidade.buscarPorMedico(nomeMedico);
+            pacientes = PessoaServicosEspecialidade.buscarPorMedico(nomeMedico);
         }
 
         tableModel.setRowCount(0);
 
-        for (ClienteServicosEspecialidade paciente : pacientes) {
+        for (PessoaServicosEspecialidade paciente : pacientes) {
             Object[] rowData = {
                     paciente.getNomeCompleto(),
                     paciente.getDataNascimento(),
@@ -709,7 +807,6 @@ public class JanelaComAbas extends JFrame {
             tableModel.addRow(rowData);
         }
     }
-
 
     public void configurarJanela() {
         setTitle("Janela Com Abas");
@@ -738,30 +835,30 @@ public class JanelaComAbas extends JFrame {
         }
 
 
-        Cliente cliente;
+        PessoaAssistida pessoaAssistida;
 
 
         if (servico.equals("Cesta Básica")) {
 
-            cliente = new ClienteCestaBasica(nome, dataNascimento, endereco, telefone, dataInicio, dataEncerramento);
+            pessoaAssistida = new PessoaAssistidaCestaBasica(nome, dataNascimento, endereco, telefone, dataInicio, dataEncerramento);
         } else {
             if (especialidade == null || especialidade.isEmpty() || medico == null || medico.equals("Selecione")) {
                 JOptionPane.showMessageDialog(this, "Especialidade e médico são obrigatórios para tratamentos.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            cliente = new ClienteServicosEspecialidade(nome, dataNascimento, endereco, telefone, dataInicio, especialidade, medico);
+            pessoaAssistida = new PessoaServicosEspecialidade(nome, dataNascimento, endereco, telefone, dataInicio, especialidade, medico);
 
         }
 
 
         if (servico.equals("Cesta Básica")) {
 
-            cliente.cadastrarCliente();
+            pessoaAssistida.cadastrarCliente();
             JOptionPane.showMessageDialog(this, "Cliente da Cesta Basica cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } else {
 
-            cliente.cadastrarCliente();
+            pessoaAssistida.cadastrarCliente();
             JOptionPane.showMessageDialog(this, "Paciente do tratamento cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         }
 

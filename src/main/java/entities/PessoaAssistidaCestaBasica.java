@@ -6,13 +6,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteCestaBasica extends Cliente {
+public class PessoaAssistidaCestaBasica extends PessoaAssistida {
 
-    public ClienteCestaBasica(){
+    public PessoaAssistidaCestaBasica(){
         super();
     }
 
-    public ClienteCestaBasica(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio, String dataEncerramento) {
+    public PessoaAssistidaCestaBasica(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio, String dataEncerramento) {
         super(nomeCompleto, dataNascimento, endereco, telefone, dataInicio, dataEncerramento);
     }
 
@@ -81,8 +81,8 @@ public class ClienteCestaBasica extends Cliente {
     }
 
 
-    public static List<ClienteCestaBasica> buscarTodos() {
-        List<ClienteCestaBasica> clientes = new ArrayList<>();
+    public static List<PessoaAssistidaCestaBasica> buscarTodos() {
+        List<PessoaAssistidaCestaBasica> clientes = new ArrayList<>();
         String sql = "SELECT * FROM pessoa_assistida_cesta_basica";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
@@ -90,7 +90,7 @@ public class ClienteCestaBasica extends Cliente {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                ClienteCestaBasica cliente = new ClienteCestaBasica();
+                PessoaAssistidaCestaBasica cliente = new PessoaAssistidaCestaBasica();
                 cliente.setNomeCompleto(rs.getString("nomeCompleto"));
                 cliente.setDataNascimento(rs.getString("dataNascimento"));
                 cliente.setEndereco(rs.getString("endereco"));
@@ -104,6 +104,10 @@ public class ClienteCestaBasica extends Cliente {
         }
 
         return clientes;
+    }
+
+    public static List<PessoaAssistida> buscarClientesPorNome(String nome) {
+        return PessoaAssistida.buscarClientesPorNome(nome, "pessoa_assistida_cesta_basica");
     }
 
 

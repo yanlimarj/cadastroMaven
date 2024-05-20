@@ -5,17 +5,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteServicosEspecialidade extends Cliente {
+public class PessoaServicosEspecialidade extends PessoaAssistida {
 
     private String especialidade;
     private String nomeMedico;
     private String obsProfissional;
 
-    public ClienteServicosEspecialidade() {
+    public PessoaServicosEspecialidade() {
         super();
     }
 
-    public ClienteServicosEspecialidade(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio, String especialidade, String nomeMedico) {
+    public PessoaServicosEspecialidade(String nomeCompleto, String dataNascimento, String endereco, String telefone, String dataInicio, String especialidade, String nomeMedico) {
         super(nomeCompleto, dataNascimento, endereco, telefone, dataInicio);
         this.especialidade = especialidade;
         this.nomeMedico = nomeMedico;
@@ -122,8 +122,8 @@ public class ClienteServicosEspecialidade extends Cliente {
 
         }
     }
-    public static List<ClienteServicosEspecialidade> buscarTodos() {
-        List<ClienteServicosEspecialidade> clientes = new ArrayList<>();
+    public static List<PessoaServicosEspecialidade> buscarTodos() {
+        List<PessoaServicosEspecialidade> clientes = new ArrayList<>();
         String sql = "SELECT * FROM pessoa_assistida_especialidades";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
@@ -131,7 +131,7 @@ public class ClienteServicosEspecialidade extends Cliente {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                ClienteServicosEspecialidade cliente = new ClienteServicosEspecialidade();
+                PessoaServicosEspecialidade cliente = new PessoaServicosEspecialidade();
                 cliente.setNomeCompleto(rs.getString("nomeCompleto"));
                 cliente.setDataNascimento(rs.getString("dataNascimento"));
                 cliente.setEndereco(rs.getString("endereco"));
@@ -149,8 +149,8 @@ public class ClienteServicosEspecialidade extends Cliente {
         return clientes;
     }
 
-    public static List<ClienteServicosEspecialidade> buscarPorMedico(String nomeMedico) {
-        List<ClienteServicosEspecialidade> pacientes = new ArrayList<>();
+    public static List<PessoaServicosEspecialidade> buscarPorMedico(String nomeMedico) {
+        List<PessoaServicosEspecialidade> pacientes = new ArrayList<>();
         String sql = "SELECT * FROM pessoa_assistida_especialidades WHERE nomeMedico = ?";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
@@ -160,7 +160,7 @@ public class ClienteServicosEspecialidade extends Cliente {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                ClienteServicosEspecialidade paciente = new ClienteServicosEspecialidade(
+                PessoaServicosEspecialidade paciente = new PessoaServicosEspecialidade(
                         rs.getString("nomeCompleto"),
                         rs.getString("dataNascimento"),
                         rs.getString("endereco"),
@@ -177,35 +177,8 @@ public class ClienteServicosEspecialidade extends Cliente {
         return pacientes;
     }
 
-    public static List<Cliente> buscarClientesPorNome(String nome) {
-        List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT * FROM pessoa_assistida_especialidade WHERE nomeCompleto LIKE ?";
-
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cadastro", "root", "741963");
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
-            pstmt.setString(1, "%" + nome + "%");
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                ClienteServicosEspecialidade cliente = new ClienteServicosEspecialidade();
-                cliente.setNomeCompleto(rs.getString("nomeCompleto"));
-                cliente.setDataNascimento(rs.getString("dataNascimento"));
-                cliente.setEndereco(rs.getString("endereco"));
-                cliente.setTelefone(rs.getString("telefone"));
-                cliente.setDataInicio(rs.getString("dataInicio"));
-                cliente.setDataEncerramento(rs.getString("dataEncerramento"));
-                cliente.setStatus(rs.getString("status"));
-                cliente.setEspecialidade(rs.getString("especialidade"));
-                cliente.setNomeMedico(rs.getString("nomeMedico"));
-                cliente.setObsProfissional(rs.getString("obsProfissional"));
-                clientes.add(cliente);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return clientes;
+    public static List<PessoaAssistida> buscarClientesPorNome(String nome) {
+        return PessoaAssistida.buscarClientesPorNome(nome, "pessoa_assistida_especialidades");
     }
 
     @Override
