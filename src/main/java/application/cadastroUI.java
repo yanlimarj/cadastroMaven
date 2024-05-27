@@ -16,7 +16,7 @@ import java.util.List;
 
 import static entities.PessoaServicosEspecialidade.buscarClientesPorNome;
 
-public class JanelaComAbas extends JFrame {
+public class cadastroUI extends JFrame {
 
     JTabbedPane abas = new JTabbedPane();
     JPanel panelCadastro = new JPanel();
@@ -54,7 +54,7 @@ public class JanelaComAbas extends JFrame {
     private JTable tableMedicos;
 
 
-    public JanelaComAbas() {
+    public cadastroUI() {
         configurarJanela();
         add(BorderLayout.CENTER, abas);
         abas.addTab("Cadastro", panelCadastro);
@@ -708,7 +708,7 @@ public class JanelaComAbas extends JFrame {
         int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este médico?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
         if (confirmacao == JOptionPane.YES_OPTION) {
 
-            int matricula = (int) tableModelMedicos.getValueAt(linhaSelecionada, 2);
+            String matricula = (String) tableModelMedicos.getValueAt(linhaSelecionada, 2);
 
 
             Medico medico = new Medico();
