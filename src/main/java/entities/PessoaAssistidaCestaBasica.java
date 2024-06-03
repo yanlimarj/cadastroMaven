@@ -1,6 +1,7 @@
 package entities;
 
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
@@ -60,23 +61,24 @@ public class PessoaAssistidaCestaBasica extends PessoaAssistida {
     public void excluirCliente(int selectedRow, DefaultTableModel tableModelCesta) {
         String nomeCompleto = (String) tableModelCesta.getValueAt(selectedRow, 0);
 
-        String sql = "DELETE FROM pessoa_assistida_cesta_basica WHERE nomeCompleto = ?";
+        int resposta = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir o cliente " + nomeCompleto
+                + "?", "Confirmação de exclusão", JOptionPane.YES_NO_OPTION);
 
-        try (Connection connection = connect();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        if (resposta == JOptionPane.YES_OPTION) {
+            String sql = "DELETE FROM pessoa_assistida_cesta_basica WHERE nomeCompleto = ?";
 
-            pstmt.setString(1, nomeCompleto);
+            try (Connection connection = connect();
+                 PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("Cliente excluído com sucesso!");
-                tableModelCesta.removeRow(selectedRow);
-            } else {
-                System.out.println("Nenhum cliente encontrado com o nome fornecido.");
+                pstmt.setString(1, nomeCompleto);
+
+                int affectedRows = pstmt.executeUpdate();
+
+                    tableModelCesta.removeRow(selectedRow);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
         }
     }
 

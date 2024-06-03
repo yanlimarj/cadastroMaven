@@ -1,5 +1,6 @@
 package entities;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
@@ -103,25 +104,29 @@ public class PessoaServicosEspecialidade extends PessoaAssistida {
     public void excluirCliente(int selectedRow, DefaultTableModel tableModel) {
         String nomeCompleto = (String) tableModel.getValueAt(selectedRow, 0);
 
-        String sql = "DELETE FROM pessoa_assistida_especialidades WHERE nomeCompleto = ?";
+        int resposta = JOptionPane.showConfirmDialog(null,
+                "Tem certeza que deseja excluir o cliente " + nomeCompleto + "?",
+                "Confirmação de Exclusão",
+                JOptionPane.YES_NO_OPTION);
 
-        try (Connection connection = connect();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        if (resposta == JOptionPane.YES_OPTION) {
+            String sql = "DELETE FROM pessoa_assistida_especialidades WHERE nomeCompleto = ?";
 
-            pstmt.setString(1, nomeCompleto);
+            try (Connection connection = connect();
+                 PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("Cliente excluído com sucesso!");
+                pstmt.setString(1, nomeCompleto);
+
+                int affectedRows = pstmt.executeUpdate();
+
                 tableModel.removeRow(selectedRow);
-            } else {
-                System.out.println("Nenhum cliente encontrado com o nome fornecido.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
 
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
     public static List<PessoaServicosEspecialidade> buscarTodos() {
         List<PessoaServicosEspecialidade> clientes = new ArrayList<>();
         String sql = "SELECT * FROM pessoa_assistida_especialidades";
